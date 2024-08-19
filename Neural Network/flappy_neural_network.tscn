@@ -1,0 +1,6 @@
+[gd_scene load_steps=2 format=3 uid="uid://6tn8ebpn88"]
+
+[ext_resource type="Script" path="res://Neural Network/flappy_neural_network.gd" id="1_yrr6k"]
+
+[node name="Neural Network" type="Node"]
+script = ExtResource("1_yrr6k")
