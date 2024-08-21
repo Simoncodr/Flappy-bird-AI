@@ -7,9 +7,11 @@ var max_velocity = 600
 var rotation_speed = 0.4 
 var example : bool = true
 var number : int
+var score : int
 var connections : Array[float]
 @onready var texture : Sprite2D = $Sprite2D
 
+# Inputs
 var velocity : float = 0
 var distanceToPipeY : float = 0
 var distanceToPipe : float = 0
@@ -24,6 +26,7 @@ func appendWeights():
 
 func _process(_delta) -> void:
 	birdRotation(linear_velocity.y)
+	dynamicScore()
 
 func birdRotation(velocity: float) -> void:
 	var max_rotation = deg_to_rad(75)  
@@ -67,13 +70,13 @@ func gatherData() -> Array[float]:
 	data.append(distanceToPipe)
 	return data 
 
-#func showData():
-#	gatherData()
-#	$"Data/VBoxContainer/Bird velocity".text = str(sigmoid(velocity))
-#	$"Data/VBoxContainer/Distance to center".text = str(sigmoid(distanceToPipeY))
-#	$"Data/VBoxContainer/Distance to pipe".text = str(sigmoid(distanceToPipe))
+func dynamicScore():
+	if global_position.y >= Game.Pipes[0].global_position.y - 50 and global_position.y <= Game.Pipes[0].global_position.y + 50:
+		score += 1
+	else:
+		score -= 1
 
 func calculateFitness() -> void:
 	if Game.POPUlATIONSCORE.size() >= number:
 		gatherData()
-		Game.POPUlATIONSCORE[number] = (5000-distanceToPipe) * (Game.SCORE + 1)
+		Game.POPUlATIONSCORE[number] = (5000-distanceToPipe) * (Game.SCORE + 1) + score

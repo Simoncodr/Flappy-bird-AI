@@ -44,10 +44,10 @@ func createBirds() -> void:
 
 func reload() -> void:
 	if Game.POPULATION.size() == 0:
-		Game.SCORE = 0
 		Game.Pipes.clear()
 		evaluateFitness()
 		clearPopulationMemory()
+		Game.SCORE = 0
 		#await get_tree().create_timer(0.1).timeout
 		Game.GENERATION += 1
 		get_tree().reload_current_scene()
@@ -80,25 +80,34 @@ func evaluateFitness() -> void:
 				top_indices[j] = index
 				break
 	
+	var total_score : float
 	for i in range(top_count):
 		print("Original Position: ", top_indices[i], ":  SCORE: ", top_values[i])
-		pass
+		total_score += top_values[i]
+		#TODO bestemme en formel der ændre mutation ud fra den gennemsnitslige score.
+	total_score /= top_values.size()
+	Game.MUTATION_RATE = (1 - sigmoid(total_score, 8000)) + 0.005
+	print("Mutation rate: ", Game.MUTATION_RATE)
 	
 	var store_indices : Array = []
-	store_indices.append_array(trimStoredIndices(top_indices))
+	store_indices.append_array(trimStoredIndices(top_indices, top_values))
 	#store_indices.append_array(top_indices)
 	Game.POPUlATIONSCORE.clear()
 	print("Stored indices: ", store_indices)
 	getWeights(store_indices)
 
+func sigmoid(x: float, bias : float) -> float:
+	x /= bias
+	return 1.0 / (1.0 + exp(-x))
+
 #TODO Få dette til at virke bedere + tilføjelse af variabel mutationsrate
-func trimStoredIndices(indices : Array) -> Array:
-	var base_value : int = indices[0]  
+func trimStoredIndices(indices : Array, scores) -> Array:
+	var base_value : int = scores[0]  
 	print("Highest value: ", base_value)
 	for i in range(indices.size()):
-		if (indices[i] * 3) < base_value:
-			indices[i] = base_value
-			print("Activated")
+		if (scores[i] * 3) < base_value:
+			print("To change: ", indices[i], "  The high value: ", base_value)
+			indices[i] = indices[0]
 	return indices
 
 
@@ -107,7 +116,7 @@ func getWeights(indices: Array) -> void:
 	for i in range(indices.size()):
 		best_weights.append(Game.POPULATIONWHEIGTS[indices[i]])
 	#print("POPULATION WHEIGHTS: ", Game.POPULATIONWHEIGTS)
-	print("Stored weights: ", best_weights[1])
+	#print("Stored weights: ", best_weights[1])
 	Game.POPULATIONWHEIGTS.clear()
 	mutateWeights(best_weights)
 
@@ -123,7 +132,7 @@ func mutateWeights(new_weights : Array) -> void:
 				var mutation : float = 1 + (1 * randf_range(-Game.MUTATION_RATE, Game.MUTATION_RATE))
 				mutationWeights[k] *= mutation
 			Game.POPULATIONWHEIGTS.append(mutationWeights)
-	print("Weights after: ", Game.POPULATIONWHEIGTS[1][1])
+	#print("Weights after: ", Game.POPULATIONWHEIGTS[1][1])
 
 func clearPopulationMemory() -> void:
 	Game.POPULATION.clear()

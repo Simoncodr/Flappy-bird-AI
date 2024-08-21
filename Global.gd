@@ -8,6 +8,6 @@ var GENERATION : int = 1
 var POPULATION : Array[Variant] 
 var POPUlATIONSCORE : Array[float]
 var POPULATIONWHEIGTS : Array = []
-var MUTATION_RATE : float = 0.1
+var MUTATION_RATE : float = 0.3
 
 var Pipes : Array
