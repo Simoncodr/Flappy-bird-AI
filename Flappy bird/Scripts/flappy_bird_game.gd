@@ -46,8 +46,6 @@ func reload() -> void:
 	if Game.POPULATION.size() == 0:
 		Game.Pipes.clear()
 		evaluateFitness()
-		clearPopulationMemory()
-		Game.SCORE = 0
 		#await get_tree().create_timer(0.1).timeout
 		Game.GENERATION += 1
 		get_tree().reload_current_scene()
@@ -132,7 +130,6 @@ func mutateWeights(new_weights : Array) -> void:
 				var mutation : float = 1 + (1 * randf_range(-Game.MUTATION_RATE, Game.MUTATION_RATE))
 				mutationWeights[k] *= mutation
 			Game.POPULATIONWHEIGTS.append(mutationWeights)
-	#print("Weights after: ", Game.POPULATIONWHEIGTS[1][1])
-
-func clearPopulationMemory() -> void:
 	Game.POPULATION.clear()
+	Game.SCORE = 0
+

@@ -1,6 +1,6 @@
 extends RigidBody2D
 
-var neural_network = preload("res://Neural Network/flappy_neural_network.tscn")
+var neural_network : PackedScene = preload("res://Neural Network/flappy_neural_network.tscn")
 
 var jump_impulse = Vector2(0, -700)
 var max_velocity = 600  
@@ -8,7 +8,6 @@ var rotation_speed = 0.4
 var example : bool = true
 var number : int
 var score : int
-var connections : Array[float]
 @onready var texture : Sprite2D = $Sprite2D
 
 # Inputs
@@ -19,10 +18,6 @@ var distanceToPipe : float = 0
 func _ready() -> void:
 	var brain = neural_network.instantiate()
 	add_child(brain)
-
-func appendWeights():
-	if Game.POPULATIONWHEIGTS.size() != 100:
-		Game.POPULATIONWHEIGTS.append(connections)
 
 func _process(_delta) -> void:
 	birdRotation(linear_velocity.y)
