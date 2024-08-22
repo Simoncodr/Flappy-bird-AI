@@ -36,7 +36,6 @@ func createBirds() -> void:
 		var bird = Birds.instantiate()
 		Game.POPULATION.append(bird)
 		Game.POPUlATIONSCORE.append(0)
-		#Game.POPULATIONWHEIGTS.append(tempArray)
 		bird.number = i
 		bird.global_position = Vector2(100, get_viewport().get_visible_rect().size.y/2)
 		add_child(bird)
@@ -112,14 +111,11 @@ func trimStoredIndices(indices : Array, scores) -> Array:
 func getWeights(indices: Array) -> void:
 	var best_weights : Array = []
 	for i in range(indices.size()):
-		best_weights.append(Game.POPULATIONWHEIGTS[indices[i]])
-	#print("POPULATION WHEIGHTS: ", Game.POPULATIONWHEIGTS)
-	#print("Stored weights: ", best_weights[1])
-	Game.POPULATIONWHEIGTS.clear()
+		best_weights.append(Game.POPULATIONWEIGHTS[indices[i]])
+	Game.POPULATIONWEIGHTS.clear()
 	mutateWeights(best_weights)
 
 func mutateWeights(new_weights : Array) -> void:
-	#print("Weights before: ", Game.POPULATIONWHEIGTS)
 	for i in 10:
 		var mutatingWeights: Array
 		mutatingWeights.append_array(new_weights[i])
@@ -129,7 +125,7 @@ func mutateWeights(new_weights : Array) -> void:
 			for k in range(mutationWeights.size()):
 				var mutation : float = 1 + (1 * randf_range(-Game.MUTATION_RATE, Game.MUTATION_RATE))
 				mutationWeights[k] *= mutation
-			Game.POPULATIONWHEIGTS.append(mutationWeights)
+			Game.POPULATIONWEIGHTS.append(mutationWeights)
 	Game.POPULATION.clear()
 	Game.SCORE = 0
 

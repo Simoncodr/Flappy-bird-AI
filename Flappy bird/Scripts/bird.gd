@@ -1,7 +1,5 @@
 extends RigidBody2D
 
-var neural_network : PackedScene = preload("res://Neural Network/flappy_neural_network.tscn")
-
 var jump_impulse = Vector2(0, -700)
 var max_velocity = 600  
 var rotation_speed = 0.4 
@@ -16,7 +14,7 @@ var distanceToPipeY : float = 0
 var distanceToPipe : float = 0
 
 func _ready() -> void:
-	var brain = neural_network.instantiate()
+	var brain = NetworkNode.new()
 	add_child(brain)
 
 func _process(_delta) -> void:
@@ -66,7 +64,7 @@ func gatherData() -> Array[float]:
 	return data 
 
 func dynamicScore():
-	if global_position.y >= Game.Pipes[0].global_position.y - 50 and global_position.y <= Game.Pipes[0].global_position.y + 50:
+	if global_position.y >= Game.Pipes[0].global_position.y - 110 and global_position.y <= Game.Pipes[0].global_position.y - 10:
 		score += 1
 	else:
 		score -= 1

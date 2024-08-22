@@ -15,7 +15,7 @@ func _ready() -> void:
 	top_pipe.position.y = -distance - 400
 
 
-func _process(_delta) -> void:
+func _physics_process(_delta) -> void:
 	global_position.x -= 5
 	addPoint()
 	delete()
