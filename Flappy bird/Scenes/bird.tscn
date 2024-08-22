@@ -10,6 +10,7 @@ height = 26.0
 [node name="Bird" type="RigidBody2D"]
 scale = Vector2(2, 2)
 collision_layer = 0
+mass = 1.1
 script = ExtResource("1_tbfb0")
 
 [node name="Sprite2D" type="Sprite2D" parent="."]
