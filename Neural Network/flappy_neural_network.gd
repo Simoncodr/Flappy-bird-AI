@@ -1,51 +1,58 @@
 class_name NetworkNode extends Node
 
-@onready var weights : PackedFloat32Array
-@onready var inputs : PackedFloat32Array
-@onready var hidden_layers : Array[int] = [8, 4, 7, 8]
-@onready var parent = get_parent()
+# This class represents a neural network node for an actor (e.g., a bird in a game).
+# The actor that instantiates this class will utilize the neural network to learn
+# and perform specific actions, such as jumping.
 
+@onready var weights : PackedFloat32Array # Stores the weights for this actor
+@onready var inputs : PackedFloat32Array # Stores the inputs fo use in the next layer of the network
+@onready var hidden_layers : Array[int] = [8, 4, 7, 8] #NOTE The numbers specify how many nodes are in each layer
+@onready var parent = get_parent() # References the parent node (the actor using this network)
 
+# Called when the node is added to the scene.
 func _ready() -> void:
-	createConnections()
-	weights.append_array(Network.POPULATIONWEIGHTS[parent.number])
+	createConnections() # Created the connections
+	weights.append_array(Network.POPULATIONWEIGHTS[parent.number]) # Appends the current weights that the actor should have
 
+# Calculates the nessesary amount of connections needed and appends an initial value to the weights array
 func createConnections():
+	
+	# Gets the data from the parent to determin the size of the input layer
 	acquireInputData()
 	
 	# Initialize necessary variables
 	var connections : PackedFloat32Array
 	
-	# Connect input layer to the first hidden layer
+	# Creates connections from the input layer to the first hidden layer
 	for input_index in range(inputs.size()):
 		for hidden_index in range(hidden_layers[0]):
 			var weight: float = randf_range(-100, 100)
 			connections.append(weight)
 	
-	# Connect hidden layers to each other
+	# Creates the connections between the hidden layers
 	for layer_index in range(hidden_layers.size() - 1):
 		for neuron_index in range(hidden_layers[layer_index]):
 			for next_neuron_index in range(hidden_layers[layer_index + 1]):
 				var weight: float = randf_range(-1, 1)
 				connections.append(weight)
 	
-	# Connect the last hidden layer to the output layer
+	# Creates the connections from the final layer to the output
 	for output_index in range(hidden_layers[-1]):
 		var weight: float = randf_range(-1, 1)
 		connections.append(weight)
 	
-	# Add the connections to the population weights
+	# Adds the connections to the population weights
 	Network.POPULATIONWEIGHTS.append(connections)
 
-
+# This function does the dirtywork and determins the output based on the input and weights
 func neuralNetwork() -> float:
 	var final_output: float = 0.0
 	
 	# Initialize necessary variables
-	var node_saver: PackedFloat32Array
-	var weights_position: int = 0
+	var node_saver: PackedFloat32Array # Saves the values for all the nodes
+	var weights_position: int = 0 # Used to know what weight should be used when
 	
-	# Gemmer inputet fra laget før.
+	# Uses the inputs from the previous layer, unless it's the first one. Then i uses the data from the parent
 	for i in range(hidden_layers.size()):
 		if i != 0:
 			inputs.clear()
@@ -54,6 +61,7 @@ func neuralNetwork() -> float:
 		else:
 			acquireInputData()
 	
+	# Loops through the layer and adds the weight and layer together to get an final value for each node
 		for j in range(hidden_layers[i]):
 			var weight: Array = []
 			for k in range(inputs.size()):
@@ -61,16 +69,17 @@ func neuralNetwork() -> float:
 				weights_position += 1
 			node_saver.append(node(inputs, weight))
 	
-	# Calculate the final output
-	for i in range(hidden_layers[-1]):
+	# Calculates the final output 
+	for i in range(hidden_layers[hidden_layers.size() - 1]):
 		final_output += node_saver[i] * weights[weights_position]
 		weights_position += 1
 	
-	# Return the sigmoid of the final output
+	# Return the final output
 	return sigmoid(final_output)
 
 
 # Handles the math for every node in the network.
+# It adds together the values of the input and their respective weights into a final value
 func node(input : Array, weight : Array) -> float:
 	var output : float
 	for i in range(input.size()):
@@ -94,6 +103,7 @@ func shouldJump() -> void:
 func acquireInputData() -> void:
 	inputs.clear()
 	inputs.append_array(parent.gatherData())
+
 
 # Runs the network every frame to determin if the bird should jump
 func _process(_delta) -> void:
