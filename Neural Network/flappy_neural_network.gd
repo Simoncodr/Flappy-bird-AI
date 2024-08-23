@@ -83,10 +83,10 @@ func neuralNetwork() -> PackedFloat32Array:
 # Handles the math for every node in the network.
 # It adds together the values of the input and their respective weights into a final value
 func node(input : Array, weight : Array) -> float:
-	var output : float = 0
+	var output_node : float = 0
 	for i in range(input.size()):
-		output += input[i] * weight[i]
-	return sigmoid(output)
+		output_node += input[i] * weight[i]
+	return sigmoid(output_node)
 
 
 # Sigmoid function (It takes the given number and turns it into a number between 0 and 1)
