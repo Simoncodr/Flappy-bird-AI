@@ -27,8 +27,8 @@ func delete() -> void:
 func addPoint() -> void:
 	if global_position.x < 100:
 		if !once:
-			Game.Pipes.erase(self)
+			get_parent().PIPES.erase(self)
 			once = true
-			if Game.Pipes.size() > 0:
-				Game.SCORE += 1
+			if get_parent().PIPES.size() > 0:
+				get_parent().SCORE += 1
 

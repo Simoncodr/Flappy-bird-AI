@@ -6,6 +6,7 @@ var rotation_speed = 0.4
 var example : bool = true
 var number : int
 var score : int
+@onready var pipes : Array = get_parent().PIPES
 @onready var texture : Sprite2D = $Sprite2D
 
 # Inputs
@@ -28,12 +29,11 @@ func birdRotation(velocity: float) -> void:
 	texture.rotation = lerp_angle(rotation, desired_rotation, rotation_speed)
 
 func _input(event) -> void:
-	if event.is_action_pressed("jump") and event.is_pressed() and Game.STATE == "PLAYER":
+	if event.is_action_pressed("jump") and event.is_pressed():
 		apply_central_impulse(jump_impulse - linear_velocity)
 
 func jump() -> void:
-	if Game.STATE == "AI":
-		apply_central_impulse(jump_impulse - linear_velocity)
+	apply_central_impulse(jump_impulse - linear_velocity)
 
 func _integrate_forces(state) -> void:
 	var velocity = state.linear_velocity
@@ -48,28 +48,28 @@ func _on_area_2d_area_entered(area) -> void:
 		deleteSelf()
 
 func deleteSelf() -> void:
-	Game.POPULATION.erase(self)
+	Network.POPULATION.erase(self)
 	queue_free()
 
 
 func gatherData() -> Array[float]:
 	var data : Array[float]
 	velocity = linear_velocity.y
-	if Game.Pipes.size() > 0 and Game.Pipes[0] != null:
-		distanceToPipeY = Game.Pipes[0].global_position.y - global_position.y
-		distanceToPipe = Game.Pipes[0].global_position.x - global_position.x
+	if pipes.size() > 0 and pipes[0] != null:
+		distanceToPipeY = pipes[0].global_position.y - global_position.y
+		distanceToPipe = pipes[0].global_position.x - global_position.x
 	data.append(velocity)
 	data.append(distanceToPipeY)
 	data.append(distanceToPipe)
 	return data 
 
 func dynamicScore():
-	if global_position.y >= Game.Pipes[0].global_position.y - 110 and global_position.y <= Game.Pipes[0].global_position.y - 10:
+	if global_position.y >= pipes[0].global_position.y + 110 and global_position.y <= pipes[0].global_position.y + 10:
 		score += 1
 	else:
 		score -= 1
 
 func calculateFitness() -> void:
-	if Game.POPUlATIONSCORE.size() >= number:
+	if Network.POPUlATIONSCORE.size() >= number:
 		gatherData()
-		Game.POPUlATIONSCORE[number] = (5000-distanceToPipe) * (Game.SCORE + 1) + score
+		Network.POPUlATIONSCORE[number] = (5000-distanceToPipe) * (get_parent().SCORE + 1) + score

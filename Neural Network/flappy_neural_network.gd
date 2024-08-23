@@ -1,20 +1,20 @@
 class_name NetworkNode extends Node
 
-@onready var weights : Array[float]
-@onready var inputs : Array[float]
-@onready var hidden_layers : Array[int] = [8, 10, 4, 8]
+@onready var weights : PackedFloat32Array
+@onready var inputs : PackedFloat32Array
+@onready var hidden_layers : Array[int] = [8, 4, 7, 8]
 @onready var parent = get_parent()
 
 
 func _ready() -> void:
 	createConnections()
-	weights.append_array(Game.POPULATIONWEIGHTS[parent.number])
+	weights.append_array(Network.POPULATIONWEIGHTS[parent.number])
 
 func createConnections():
 	acquireInputData()
 	
 	# Initialize necessary variables
-	var connections : Array[float]
+	var connections : PackedFloat32Array
 	
 	# Connect input layer to the first hidden layer
 	for input_index in range(inputs.size()):
@@ -35,29 +35,27 @@ func createConnections():
 		connections.append(weight)
 	
 	# Add the connections to the population weights
-	Game.POPULATIONWEIGHTS.append(connections)
+	Network.POPULATIONWEIGHTS.append(connections)
 
 
 func neuralNetwork() -> float:
 	var final_output: float = 0.0
 	
-	# Acquire input data
-	acquireInputData()
-	
 	# Initialize necessary variables
-	var node_saver: Array[float] = []
+	var node_saver: PackedFloat32Array
 	var weights_position: int = 0
 	
-	# Process each hidden layer
+	# Gemmer inputet fra laget før.
 	for i in range(hidden_layers.size()):
 		if i != 0:
 			inputs.clear()
 			for j in range(hidden_layers[i - 1]):
 				inputs.append(node_saver[node_saver.size() - j - 1])
-		
+		else:
+			acquireInputData()
+	
 		for j in range(hidden_layers[i]):
 			var weight: Array = []
-			
 			for k in range(inputs.size()):
 				weight.append(weights[weights_position])
 				weights_position += 1
@@ -72,7 +70,7 @@ func neuralNetwork() -> float:
 	return sigmoid(final_output)
 
 
-
+# Handles the math for every node in the network.
 func node(input : Array, weight : Array) -> float:
 	var output : float
 	for i in range(input.size()):
@@ -97,6 +95,6 @@ func acquireInputData() -> void:
 	inputs.clear()
 	inputs.append_array(parent.gatherData())
 
-
+# Runs the network every frame to determin if the bird should jump
 func _process(_delta) -> void:
 	shouldJump()
