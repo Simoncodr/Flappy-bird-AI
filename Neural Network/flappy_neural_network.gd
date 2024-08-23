@@ -6,7 +6,8 @@ class_name NetworkNode extends Node
 
 @onready var weights : PackedFloat32Array # Stores the weights for this actor
 @onready var inputs : PackedFloat32Array # Stores the inputs fo use in the next layer of the network
-@onready var hidden_layers : Array[int] = [8, 4, 7, 8] #NOTE The numbers specify how many nodes are in each layer
+@onready var hidden_layers : PackedInt32Array = [8, 4, 7, 8] #NOTE The numbers specify how many nodes are in each layer
+@onready var output : PackedInt32Array = [2] # NOTE The number of outputs
 @onready var parent = get_parent() # References the parent node (the actor using this network)
 
 # Called when the node is added to the scene.
@@ -37,16 +38,17 @@ func createConnections():
 				connections.append(weight)
 	
 	# Creates the connections from the final layer to the output
-	for output_index in range(hidden_layers[-1]):
-		var weight: float = randf_range(-1, 1)
-		connections.append(weight)
+	for i in range(output.size()):
+		for j in range(hidden_layers[-1]):
+			var weight: float = randf_range(-1, 1)
+			connections.append(weight)
 	
 	# Adds the connections to the population weights
 	Network.POPULATIONWEIGHTS.append(connections)
 
 # This function does the dirtywork and determins the output based on the input and weights
-func neuralNetwork() -> float:
-	var final_output: float = 0.0
+func neuralNetwork() -> PackedFloat32Array:
+	var final_output: PackedFloat32Array = []
 	
 	# Initialize necessary variables
 	var node_saver: PackedFloat32Array = [] # Saves the values for all the nodes
@@ -57,7 +59,7 @@ func neuralNetwork() -> float:
 		if i != 0:
 			inputs.clear()
 			for j in range(hidden_layers[i - 1]):
-				inputs.append(node_saver[node_saver.size() - j - 1])
+				inputs.append(node_saver[-1- j])
 		else:
 			acquireInputData()
 	
@@ -69,13 +71,13 @@ func neuralNetwork() -> float:
 				weights_position += 1
 			node_saver.append(node(inputs, weight))
 	
-	# Calculates the final output 
-	for i in range(hidden_layers[hidden_layers.size() - 1]):
-		final_output += node_saver[i] * weights[weights_position]
+	# Calculates the final output and appends it to the output array
+	for i in range(hidden_layers[-1]):
+		final_output.append(sigmoid(node_saver[i] * weights[weights_position]))
 		weights_position += 1
 	
 	# Return the final output
-	return sigmoid(final_output)
+	return final_output
 
 
 # Handles the math for every node in the network.
@@ -92,19 +94,12 @@ func sigmoid(x: float) -> float:
 	return 1.0 / (1.0 + exp(-x))
 
 
-# Uses the output of the neural network, to determin in the bird should jump
-func shouldJump() -> void:
-	# If the value is equal to or bigger and 0.5 the bird jumps
-	if neuralNetwork() >= 0.5:
-		parent.jump()
-
-
 # Gets the input data from the parent
 func acquireInputData() -> void:
 	inputs.clear()
 	inputs.append_array(parent.gatherData())
 
 
-# Runs the network every frame to determin if the bird should jump
+# Runs the network every frame and send the information to the actor
 func _process(_delta) -> void:
-	shouldJump()
+	parent.action(neuralNetwork())

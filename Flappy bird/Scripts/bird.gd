@@ -32,8 +32,9 @@ func _input(event) -> void:
 	if event.is_action_pressed("jump") and event.is_pressed():
 		apply_central_impulse(jump_impulse - linear_velocity)
 
-func jump() -> void:
-	apply_central_impulse(jump_impulse - linear_velocity)
+func action(network : PackedFloat32Array) -> void:
+	if network[0] > network[1]:
+		apply_central_impulse(jump_impulse - linear_velocity)
 
 func _integrate_forces(state) -> void:
 	var velocity_force = state.linear_velocity
@@ -64,8 +65,8 @@ func gatherData() -> PackedFloat32Array:
 	return data 
 
 func dynamicScore():
-	if global_position.y >= pipes[0].global_position.y + 110 and global_position.y <= pipes[0].global_position.y + 10:
-		score += 1
+	if global_position.y >= pipes[0].global_position.y + 160 and global_position.y <= pipes[0].global_position.y + 30:
+		score += 5
 	else:
 		score -= 1
 
