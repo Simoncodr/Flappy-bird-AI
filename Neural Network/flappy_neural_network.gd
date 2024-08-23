@@ -21,7 +21,7 @@ func createConnections():
 	acquireInputData()
 	
 	# Initialize necessary variables
-	var connections : PackedFloat32Array
+	var connections : PackedFloat32Array = []
 	
 	# Creates connections from the input layer to the first hidden layer
 	for input_index in range(inputs.size()):
@@ -49,7 +49,7 @@ func neuralNetwork() -> float:
 	var final_output: float = 0.0
 	
 	# Initialize necessary variables
-	var node_saver: PackedFloat32Array # Saves the values for all the nodes
+	var node_saver: PackedFloat32Array = [] # Saves the values for all the nodes
 	var weights_position: int = 0 # Used to know what weight should be used when
 	
 	# Uses the inputs from the previous layer, unless it's the first one. Then i uses the data from the parent
@@ -81,7 +81,7 @@ func neuralNetwork() -> float:
 # Handles the math for every node in the network.
 # It adds together the values of the input and their respective weights into a final value
 func node(input : Array, weight : Array) -> float:
-	var output : float
+	var output : float = 0
 	for i in range(input.size()):
 		output += input[i] * weight[i]
 	return sigmoid(output)

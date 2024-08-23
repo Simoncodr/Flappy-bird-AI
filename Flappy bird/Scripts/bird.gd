@@ -22,10 +22,10 @@ func _process(_delta) -> void:
 	birdRotation(linear_velocity.y)
 	dynamicScore()
 
-func birdRotation(velocity: float) -> void:
+func birdRotation(velocityY: float) -> void:
 	var max_rotation = deg_to_rad(75)  
 	var min_rotation = deg_to_rad(-75)  
-	var desired_rotation = clamp(velocity / 400.0, min_rotation, max_rotation)
+	var desired_rotation = clamp(velocityY / 400.0, min_rotation, max_rotation)
 	texture.rotation = lerp_angle(rotation, desired_rotation, rotation_speed)
 
 func _input(event) -> void:
@@ -36,10 +36,10 @@ func jump() -> void:
 	apply_central_impulse(jump_impulse - linear_velocity)
 
 func _integrate_forces(state) -> void:
-	var velocity = state.linear_velocity
-	if velocity.y < 0 and velocity.length() > max_velocity:
-		velocity = velocity.normalized() * max_velocity
-	state.linear_velocity = velocity
+	var velocity_force = state.linear_velocity
+	if velocity_force.y < 0 and velocity_force.length() > max_velocity:
+		velocity_force = velocity_force.normalized() * max_velocity
+	state.linear_velocity = velocity_force
 
 
 func _on_area_2d_area_entered(area) -> void:
@@ -52,8 +52,8 @@ func deleteSelf() -> void:
 	queue_free()
 
 
-func gatherData() -> Array[float]:
-	var data : Array[float]
+func gatherData() -> PackedFloat32Array:
+	var data : PackedFloat32Array = []
 	velocity = linear_velocity.y
 	if pipes.size() > 0 and pipes[0] != null:
 		distanceToPipeY = pipes[0].global_position.y - global_position.y

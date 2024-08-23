@@ -21,8 +21,8 @@ func evaluateFitness() -> void:
 		value_index_pairs.append([Network.POPUlATIONSCORE[i], i])
 	
 	var top_count : float = min(10, value_index_pairs.size()) # Determines how many top scores to consider
-	var top_values : PackedFloat32Array # Stores the top scores
-	var top_indices : PackedFloat32Array # Stores the indices of the top scores
+	var top_values : PackedFloat32Array = [] # Stores the top scores
+	var top_indices : PackedFloat32Array = [] # Stores the indices of the top scores
 	
 	# Initializes the top_values and top_indices arrays with default values
 	for i in range(top_count):
@@ -48,7 +48,7 @@ func evaluateFitness() -> void:
 				break
 	
 	# Calculates the average of the top scores
-	var total_score : float
+	var total_score : float = 0
 	for i in range(top_count):
 		total_score += top_values[i]
 	
@@ -105,12 +105,12 @@ func getWeights(indices: Array) -> void:
 func mutateWeights(new_weights : Array) -> void:
 	# Loops through each set of weights in the provided new_weights array
 	for i in range(new_weights.size()):
-		var mutatingWeights: Array # Temporary array to hold weights for mutation
+		var mutatingWeights: Array = [] # Temporary array to hold weights for mutation
 		mutatingWeights.append_array(new_weights[i]) # Copy the current set of weights
 		
 		# Prepares the weight arrays one at a time for mutation
 		for j in range(new_weights.size()):
-			var mutationWeights : Array # Array to store the mutated weights
+			var mutationWeights : Array = [] # Array to store the mutated weights
 			mutationWeights.append_array(mutatingWeights) # Copy the weights to be mutated
 			
 			# Applies mutation to each weight in the current set
