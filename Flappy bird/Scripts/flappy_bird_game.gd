@@ -2,6 +2,7 @@ extends Control
 
 @onready var score : Label = $VBoxContainer/score
 @onready var generation : Label = $VBoxContainer/generation
+@onready var visualizer : PackedScene = preload("res://Neural Network/network_visualization.tscn")
 var Pipes = preload("res://Flappy bird/Scenes/pipes.tscn")
 var Birds = preload("res://Flappy bird/Scenes/bird.tscn")
 
@@ -18,6 +19,11 @@ var mutation_rate = 0.1
 func _ready() -> void:
 	createBirds()
 	createPipes()
+	addVisualizer()
+
+func addVisualizer():
+	var viz = visualizer.instantiate()
+	add_child(viz)
 
 func _process(_delta) -> void:
 	score.text = "SCORE: " + str(SCORE)

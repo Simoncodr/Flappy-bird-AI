@@ -14,10 +14,6 @@ var velocity : float = 0
 var distanceToPipeY : float = 0
 var distanceToPipe : float = 0
 
-func _ready() -> void:
-	var brain = NetworkNode.new()
-	add_child(brain)
-
 func _process(_delta) -> void:
 	birdRotation(linear_velocity.y)
 	dynamicScore()

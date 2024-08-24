@@ -9,6 +9,9 @@ var POPULATIONWEIGHTS : Array = [] # Stores all the weights of each actor in an 
 var MUTATION_RATE : float = 0.3 # Determins how much the weights mutate after each generation
 var GENERATION : int = 1 # Number of generations passed
 
+var hidden_layers : PackedInt32Array = [8, 4, 7, 8] #NOTE The numbers specify how many nodes are in each layer
+var output : PackedInt32Array = [2] # NOTE The number of outputs
+
 
 # Calculates the fitness of each actor, by looking at its score
 # This function calculates the fitness of each actor by evaluating its score.

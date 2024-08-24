@@ -1,0 +1,29 @@
+[gd_scene load_steps=4 format=3 uid="uid://poruoytb5ef7"]
+
+[ext_resource type="Texture2D" uid="uid://d0v3d66vybnlx" path="res://Neural Network/node.png" id="1_4rf7g"]
+[ext_resource type="Script" path="res://Neural Network/node.gd" id="1_8xslh"]
+
+[sub_resource type="LabelSettings" id="LabelSettings_nh0ty"]
+outline_size = 6
+outline_color = Color(0, 0, 0, 1)
+shadow_size = 9
+shadow_color = Color(0, 0, 0, 0.733333)
+
+[node name="Node" type="Label"]
+z_index = 1
+offset_left = -14.0
+offset_top = -12.0
+offset_right = 5.0
+offset_bottom = 11.0
+pivot_offset = Vector2(5, 12)
+theme_override_font_sizes/font_size = 16
+text = "10"
+label_settings = SubResource("LabelSettings_nh0ty")
+script = ExtResource("1_8xslh")
+
+[node name="Sprite2D" type="Sprite2D" parent="."]
+modulate = Color(0.541176, 0.541176, 0.541176, 1)
+show_behind_parent = true
+position = Vector2(14, 12)
+scale = Vector2(2, 2)
+texture = ExtResource("1_4rf7g")
