@@ -140,27 +140,35 @@ func _input(_event):
 		var path : String = "res://Neural Network/weights.json"
 		var file = FileAccess.open(path, FileAccess.WRITE)
 		
-		# Clear the file content (optional, since FileAccess.WRITE mode overwrites the file)
+		# Ensure the file is cleared (optional)
 		file.store_string("") 
 		
-		# Convert PackedFloat32Array to a regular Array for JSON serialization
+		# Prepare the nodes array
+		var nodes : Array[int] = []
+		nodes.append(input)
+		for i in range(hidden_layers.size()):
+			nodes.append(hidden_layers[i])
+		nodes.append(output)
+		var json_string_nodes : String = JSON.stringify(nodes)
+		file.store_string(json_string_nodes)
+		
+		file.store_string("\n")
+		
 		var weights_array : Array = []
 		for i in range(weights.size()):
 			weights_array.append(weights[i])
+		var json_string_weights : String = JSON.stringify(weights_array)
+		file.store_string(json_string_weights)
 		
-		# Convert the array to JSON format using JSON.stringify()
-		var json_string : String = JSON.stringify(weights_array)
-		
-		# Write the JSON string to the file
-		file.store_string(json_string)
-		
-		# Close the file to ensure the data is saved properly
+		# Close the file
 		file.close()
-		dataFromJSON()
+		
+		print(dataFromJSON())
 
 
+# Collects stored data from the JSON file, and returns each line in an array
 func dataFromJSON() -> Array:
-	var final_output : Array
+	var final_output : Array = [] 
 	# Path to the JSON file
 	var path : String = "res://Neural Network/weights.json"
 	
@@ -168,26 +176,18 @@ func dataFromJSON() -> Array:
 	var file = FileAccess.open(path, FileAccess.READ)
 	
 	if file:
-		# Read the entire file content as a JSON string
-		var json_string : String = file.get_as_text()
-		file.close()  # Close the file after reading its content
-		
-		# Create a new JSON instance for parsing
 		var json = JSON.new()
+		# Loop to read and parse each line
+		for i in range(2):  # Adjust the range if the number of lines changes
+			var line : String = file.get_line().strip_edges()
+			if line.length() > 0:
+				var parse_result = json.parse(line)
+				if parse_result == OK:
+					var data_array : Array = json.get_data()
+					final_output.append(data_array)
 		
-		# Parse the JSON string
-		var parse_result = json.parse(json_string)
-		
-		# Check if parsing was successful
-		if parse_result == OK:
-			# Retrieve the parsed data (assumed to be an array)
-			var weights_array : Array = json.get_data()
-			
-			final_output.append_array(weights_array)
-			# Print the array and its size
-			print("Weights Array: ", weights_array)
-			print("Array size: ", weights_array.size())
+		file.close() # Close the file after reading
 	
-	return final_output
+	return final_output # Return each line as its own place in an array
 
 
