@@ -69,4 +69,4 @@ func dynamicScore():
 func calculateFitness() -> void:
 	if Network.POPUlATIONSCORE.size() >= number:
 		gatherData()
-		Network.POPUlATIONSCORE[number] = (5000-distanceToPipe) * (get_parent().SCORE + 1) + score
+		Network.POPUlATIONSCORE[number] = (5000-distanceToPipe) * (get_parent().SCORE + 1)# + score

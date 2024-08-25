@@ -24,7 +24,7 @@ func createConnections():
 	var connections : PackedFloat32Array = []
 	
 	# Creates connections from the input layer to the first hidden layer
-	for i in range(inputs.size()):
+	for i in range(Network.input):
 		for j in range(Network.hidden_layers[0]):
 			var weight: float = randf_range(-100, 100)
 			connections.append(weight)
@@ -37,7 +37,7 @@ func createConnections():
 				connections.append(weight)
 	
 	# Creates the connections from the final layer to the output
-	for i in range(Network.output.size()):
+	for i in range(Network.output):
 		for j in range(Network.hidden_layers[-1]):
 			var weight: float = randf_range(-1, 1)
 			connections.append(weight)
@@ -103,3 +103,6 @@ func acquireInputData() -> void:
 # Runs the network every frame and send the information to the actor
 func _process(_delta) -> void:
 	parent.action(neuralNetwork())
+
+
+

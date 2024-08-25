@@ -42,7 +42,7 @@ func createVisualizationNodes():
 	var outputs = VBoxContainer.new()
 	outputs.alignment = BoxContainer.ALIGNMENT_CENTER
 	outputs.add_theme_constant_override("separation", 30)
-	for i in range(Network.output[0]):
+	for i in range(Network.output):
 		var node = network_node.instantiate()
 		output.append(node)
 		outputs.add_child(node)
@@ -51,7 +51,7 @@ func createVisualizationNodes():
 func changeNodeValues():
 	# Input layers
 	var input_data : PackedFloat32Array = actor.gatherData()
-	for i in range(3):
+	for i in range(Network.input):
 		var value = input_data[i]
 		var int_value = int(value) 
 		var formatted_value = str(int_value)
@@ -65,7 +65,7 @@ func changeNodeValues():
 	
 	# Output layers
 	var output_data = actor.get_node("NetworkNode").neuralNetwork()
-	for i in range(Network.output[0]):
+	for i in range(Network.output):
 		var value = output_data[i]
 		var formatted_value = String("%0.2f" % value) 
 		output[i].updateText(formatted_value)

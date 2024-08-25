@@ -2,6 +2,8 @@ extends Node
 
 # This script must be autoloaded for anything for anything to work
 
+
+
 var AMOUNT : int = 100 # Amount of actors per generation
 var POPULATION : Array[Variant] # Stores each actor for whatever use
 var POPUlATIONSCORE : PackedFloat32Array # Score of each actor 
@@ -9,8 +11,9 @@ var POPULATIONWEIGHTS : Array = [] # Stores all the weights of each actor in an 
 var MUTATION_RATE : float = 0.3 # Determins how much the weights mutate after each generation
 var GENERATION : int = 1 # Number of generations passed
 
-var hidden_layers : PackedInt32Array = [8, 4, 7, 8] #NOTE The numbers specify how many nodes are in each layer
-var output : PackedInt32Array = [2] # NOTE The number of outputs
+var input : int = 3 # NOTE The number of inputs
+var hidden_layers : PackedInt32Array = [8, 8] #NOTE The numbers specify how many nodes are in each layer
+var output : int = 2 # NOTE The number of outputs
 
 
 # Calculates the fitness of each actor, by looking at its score
@@ -127,4 +130,64 @@ func mutateWeights(new_weights : Array) -> void:
 	# Clear the current population and increment the generation count. Now the cycle can repeat
 	Network.POPULATION.clear()
 	Network.GENERATION += 1
+
+# Saves the data to a txt file
+func _input(_event):
+	if Input.is_action_just_pressed("save"):
+		var actor : Variant = POPULATION[0]
+		var weights : PackedFloat32Array = POPULATIONWEIGHTS[actor.number]
+		
+		var path : String = "res://Neural Network/weights.json"
+		var file = FileAccess.open(path, FileAccess.WRITE)
+		
+		# Clear the file content (optional, since FileAccess.WRITE mode overwrites the file)
+		file.store_string("") 
+		
+		# Convert PackedFloat32Array to a regular Array for JSON serialization
+		var weights_array : Array = []
+		for i in range(weights.size()):
+			weights_array.append(weights[i])
+		
+		# Convert the array to JSON format using JSON.stringify()
+		var json_string : String = JSON.stringify(weights_array)
+		
+		# Write the JSON string to the file
+		file.store_string(json_string)
+		
+		# Close the file to ensure the data is saved properly
+		file.close()
+		dataFromJSON()
+
+
+func dataFromJSON() -> Array:
+	var final_output : Array
+	# Path to the JSON file
+	var path : String = "res://Neural Network/weights.json"
+	
+	# Open the file in read mode
+	var file = FileAccess.open(path, FileAccess.READ)
+	
+	if file:
+		# Read the entire file content as a JSON string
+		var json_string : String = file.get_as_text()
+		file.close()  # Close the file after reading its content
+		
+		# Create a new JSON instance for parsing
+		var json = JSON.new()
+		
+		# Parse the JSON string
+		var parse_result = json.parse(json_string)
+		
+		# Check if parsing was successful
+		if parse_result == OK:
+			# Retrieve the parsed data (assumed to be an array)
+			var weights_array : Array = json.get_data()
+			
+			final_output.append_array(weights_array)
+			# Print the array and its size
+			print("Weights Array: ", weights_array)
+			print("Array size: ", weights_array.size())
+	
+	return final_output
+
 
