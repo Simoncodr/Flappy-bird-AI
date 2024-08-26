@@ -6,6 +6,7 @@ var rotation_speed = 0.4
 var example : bool = true
 var number : int
 var score : int
+var game_state : String
 @onready var pipes : Array = get_parent().PIPES
 @onready var texture : Sprite2D = $Sprite2D
 

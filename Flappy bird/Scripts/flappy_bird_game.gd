@@ -12,14 +12,16 @@ var distanceToPipe : float = 0
 var SCORE : int = 0
 var PIPES : Array
 
-var population_size = 100
-var mutation_rate = 0.1
+var game_state : String = "learn" # learn or preset
 
 
 func _ready() -> void:
-	createBirds()
+	if game_state == "learn":
+		createBirds()
+		addVisualizer()
+	else:
+		createBird()
 	createPipes()
-	addVisualizer()
 
 func addVisualizer():
 	var viz = visualizer.instantiate()
@@ -47,10 +49,19 @@ func createBirds() -> void:
 		bird.global_position = Vector2(100, get_viewport().get_visible_rect().size.y/2)
 		add_child(bird)
 
+func createBird() -> void:
+	var bird = Birds.instantiate()
+	bird.global_position = Vector2(100, get_viewport().get_visible_rect().size.y/2)
+	Network.POPULATION.append(bird)
+	Network.POPUlATIONSCORE.append(0)
+	bird.game_state = "preset"
+	bird.number = 0
+	add_child(bird)
 
 func reload() -> void:
 	if Network.POPULATION.size() == 0:
-		Network.evaluateFitness()
+		if game_state == "learn":
+			Network.evaluateFitness()
 		get_tree().reload_current_scene()
 
 

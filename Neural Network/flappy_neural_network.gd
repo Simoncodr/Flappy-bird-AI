@@ -6,13 +6,27 @@ class_name NetworkNode extends Node
 
 @onready var weights : PackedFloat32Array # Stores the weights for this actor
 @onready var inputs : PackedFloat32Array # Stores the inputs fo use in the next layer of the network
-@onready var parent = get_parent() # References the parent node (the actor using this network)
+@onready var parent : Variant = get_parent() # References the parent node (the actor using this network)
 var node_saver: Array[float] = [] # Saves the values for all the nodes
 
 # Called when the node is added to the scene.
 func _ready() -> void:
-	createConnections() # Created the connections
-	weights.append_array(Network.POPULATIONWEIGHTS[parent.number]) # Appends the current weights that the actor should have
+	if parent.game_state == "preset":
+		presetConnection()
+	else:
+		createConnections() # Created the connections
+		weights.append_array(Network.POPULATIONWEIGHTS[parent.number]) # Appends the current weights that the actor should have
+
+
+# Load the trained data into the actor
+func presetConnection():
+	Network.POPULATIONWEIGHTS.clear()
+	weights.append_array(Network.dataFromJSON()["weights"])
+	Network.input = Network.dataFromJSON()["nodes"][0]
+	for i in range(1, Network.dataFromJSON()["nodes"].size() - 1):
+		Network.hidden_layers[i - 1] = Network.dataFromJSON()["nodes"][i]
+	Network.output = Network.dataFromJSON()["nodes"][-1]
+
 
 # Calculates the nessesary amount of connections needed and appends an initial value to the weights array
 func createConnections():
@@ -44,6 +58,7 @@ func createConnections():
 	
 	# Adds the connections to the population weights
 	Network.POPULATIONWEIGHTS.append(connections)
+
 
 # This function does the dirtywork and determins the output based on the input and weights
 func neuralNetwork() -> PackedFloat32Array:

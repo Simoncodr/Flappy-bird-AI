@@ -167,7 +167,8 @@ func _input(_event):
 		# Close the file
 		file.close()
 		
-		print(dataFromJSON()["nodes"])
+		print("Network saved!")
+
 
 # Collects stored data from the JSON file
 func dataFromJSON() -> Dictionary:
