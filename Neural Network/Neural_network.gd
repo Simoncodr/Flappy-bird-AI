@@ -80,7 +80,7 @@ func neuralNetwork() -> PackedFloat32Array:
 	
 	# Calculates the final output and appends it to the output array
 	for i in range(network_hidden_layers[-1]):
-		final_output.append(sigmoid(node_saver[i] * weights[weights_position]))
+		final_output.append(relu(node_saver[i] * weights[weights_position]))
 		weights_position += 1
 	
 	# Return the final output
@@ -93,13 +93,16 @@ func node(input : Array, weight : Array) -> float:
 	var output_node : float = 0
 	for i in range(input.size()):
 		output_node += input[i] * weight[i]
-	return sigmoid(output_node)
+	return relu(output_node)
 
 
 # Sigmoid function (It takes the given number and turns it into a number between 0 and 1)
 func sigmoid(x: float) -> float:
 	return 1.0 / (1.0 + exp(-x))
 
+# ReLU function (It takes in a number, and returns it. Unless it's negative, in which case it returns 0)
+func relu(x: float) -> float:
+	return max(0.0, x)
 
 # Gets the input data from the parent
 func acquireInputData() -> void:

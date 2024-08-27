@@ -12,7 +12,7 @@ var distanceToPipe : float = 0
 var SCORE : int = 0
 var PIPES : Array
 
-var game_state : String = "learn" # learn or preset
+var game_state : String = "preset" # learn or preset
 
 
 func _ready() -> void:
