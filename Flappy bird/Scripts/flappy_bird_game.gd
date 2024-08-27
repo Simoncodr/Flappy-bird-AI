@@ -2,7 +2,7 @@ extends Control
 
 @onready var score : Label = $VBoxContainer/score
 @onready var generation : Label = $VBoxContainer/generation
-@onready var visualizer : PackedScene = preload("res://Neural Network/network_visualization.tscn")
+@onready var visualizer : PackedScene = preload("res://Neural Network/Network_visualization.tscn")
 var Pipes = preload("res://Flappy bird/Scenes/pipes.tscn")
 var Birds = preload("res://Flappy bird/Scenes/bird.tscn")
 

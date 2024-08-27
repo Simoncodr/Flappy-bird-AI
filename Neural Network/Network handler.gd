@@ -2,8 +2,6 @@ extends Node
 
 # This script must be autoloaded for anything for anything to work
 
-
-
 var AMOUNT : int = 100 # Amount of actors per generation
 var POPULATION : Array[Variant] # Stores each actor for whatever use
 var POPUlATIONSCORE : PackedFloat32Array # Score of each actor 
