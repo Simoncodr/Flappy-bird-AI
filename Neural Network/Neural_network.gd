@@ -72,11 +72,11 @@ func neuralNetwork() -> PackedFloat32Array:
 	
 	# Loops through the layer and adds the weight and layer together to get an final value for each node
 		for j in range(network_hidden_layers[i]):
-			var weight: Array = []
+			var node_value: float = 0.0
 			for k in range(inputs.size()):
-				weight.append(weights[weights_position])
+				node_value += inputs[k] * weights[weights_position]
 				weights_position += 1
-			node_saver.append(node(inputs, weight))
+			node_saver.append(relu(node_value))
 	
 	# Calculates the final output and appends it to the output array
 	for i in range(network_output):
@@ -86,14 +86,6 @@ func neuralNetwork() -> PackedFloat32Array:
 	# Return the final output
 	return final_output
 
-
-# Handles the math for every node in the network.
-# It adds together the values of the input and their respective weights into a final value
-func node(input : Array, weight : Array) -> float:
-	var output_node : float = 0
-	for i in range(input.size()):
-		output_node += input[i] * weight[i]
-	return relu(output_node)
 
 # ReLU function (It takes in a number, and returns it. Unless it's negative, in which case it returns 0)
 func relu(x: float) -> float:
