@@ -7,7 +7,7 @@ class_name NetworkNode extends Node
 @onready var weights : PackedFloat32Array # Stores the weights for this actor
 @onready var inputs : PackedFloat32Array # Stores the inputs fo use in the next layer of the network
 @onready var parent : Variant = get_parent() # References the parent node (the actor using this network)
-var node_saver: Array[float] = [] # Saves the values for all the nodes
+var node_saver: PackedFloat32Array = [] # Saves the values for all the nodes
 
 @onready var network_input : int = Network.input
 @onready var network_hidden_layers : PackedInt32Array = Network.hidden_layers
@@ -79,8 +79,8 @@ func neuralNetwork() -> PackedFloat32Array:
 			node_saver.append(node(inputs, weight))
 	
 	# Calculates the final output and appends it to the output array
-	for i in range(network_hidden_layers[-1]):
-		final_output.append(relu(node_saver[i] * weights[weights_position]))
+	for i in range(network_output):
+		final_output.append(relu(node_saver[-i] * weights[weights_position]))
 		weights_position += 1
 	
 	# Return the final output

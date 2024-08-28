@@ -5,6 +5,7 @@ class_name AI extends Node
 @onready var weights : PackedFloat32Array # Stores the weights for this actor
 @onready var inputs : PackedFloat32Array # Stores the inputs fo use in the next layer of the network
 @onready var parent : Variant = get_parent() # References the parent node (the actor using this network)
+var node_saver: Array[float] = [] # Saves the values for all the nodes
 
 @onready var network_input : int
 @onready var network_hidden_layers : PackedInt32Array 
@@ -31,7 +32,7 @@ func neuralNetwork() -> PackedFloat32Array:
 	
 	# Initialize necessary variables
 	#var node_saver: PackedFloat32Array = [] # Saves the values for all the nodes
-	var node_saver: Array[float] = [] # Saves the values for all the nodes
+	node_saver.clear()
 	var weights_position: int = 0 # Used to know what weight should be used when
 	
 	# Uses the inputs from the previous layer, unless it's the first one. Then i uses the data from the parent
@@ -52,8 +53,8 @@ func neuralNetwork() -> PackedFloat32Array:
 			node_saver.append(node(inputs, weight))
 	
 	# Calculates the final output and appends it to the output array
-	for i in range(network_hidden_layers[-1]):
-		final_output.append(relu(node_saver[i] * weights[weights_position]))
+	for i in range(network_output):
+		final_output.append(relu(node_saver[-i] * weights[weights_position]))
 		weights_position += 1
 	
 	# Return the final output

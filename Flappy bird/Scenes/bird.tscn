@@ -2,7 +2,7 @@
 
 [ext_resource type="Script" path="res://Flappy bird/Scripts/bird.gd" id="1_tbfb0"]
 [ext_resource type="Texture2D" uid="uid://vq4sr4x74mp3" path="res://Textures/The bird.png" id="2_xbhny"]
-[ext_resource type="Script" path="res://Neural Network/Neural_network.gd" id="3_bkcvn"]
+[ext_resource type="Script" path="res://Neural Network/AI handler.gd" id="3_5f5pd"]
 
 [sub_resource type="CapsuleShape2D" id="CapsuleShape2D_7pini"]
 radius = 7.0
@@ -48,7 +48,7 @@ text = "0"
 layout_mode = 2
 text = "0"
 
-[node name="NetworkNode" type="Node" parent="."]
-script = ExtResource("3_bkcvn")
+[node name="AI" type="Node" parent="."]
+script = ExtResource("3_5f5pd")
 
 [connection signal="area_entered" from="Area2D" to="." method="_on_area_2d_area_entered"]
