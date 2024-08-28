@@ -18,6 +18,7 @@ var distanceToPipe : float = 0
 func _process(_delta) -> void:
 	birdRotation(linear_velocity.y)
 	dynamicScore()
+	showOrHide()
 
 func birdRotation(velocityY: float) -> void:
 	var max_rotation = deg_to_rad(75)  
@@ -71,3 +72,9 @@ func calculateFitness() -> void:
 	if Network.POPUlATIONSCORE.size() >= number:
 		gatherData()
 		Network.POPUlATIONSCORE[number] = (5000-distanceToPipe) * (get_parent().SCORE + 1)# + score
+
+func showOrHide():
+	if self == Network.POPULATION[0]:
+		show()
+	else:
+		hide()

@@ -2,6 +2,7 @@ extends Control
 
 @onready var score : Label = $VBoxContainer/score
 @onready var generation : Label = $VBoxContainer/generation
+@onready var bird_amount : Label = $"VBoxContainer/bird amount"
 @onready var visualizer : PackedScene = preload("res://Neural Network/Network_visualization.tscn")
 var Pipes = preload("res://Flappy bird/Scenes/pipes.tscn")
 var Birds = preload("res://Flappy bird/Scenes/bird.tscn")
@@ -12,7 +13,7 @@ var distanceToPipe : float = 0
 var SCORE : int = 0
 var PIPES : Array
 
-var game_state : String = "preset" # learn or preset
+var game_state : String = "learn" # learn or preset
 
 
 func _ready() -> void:
@@ -30,6 +31,7 @@ func addVisualizer():
 func _process(_delta) -> void:
 	score.text = "SCORE: " + str(SCORE)
 	generation.text = "GENERATION: " + str(Network.GENERATION)
+	bird_amount.text = "BIRD AMOUNT: " +str(Network.POPULATION.size())
 	reload()
 
 func createPipes():

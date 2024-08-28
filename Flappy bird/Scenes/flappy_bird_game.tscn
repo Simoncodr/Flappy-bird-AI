@@ -174,4 +174,8 @@ text = "SCORE"
 layout_mode = 2
 text = "GENERATION"
 
+[node name="bird amount" type="Label" parent="VBoxContainer"]
+layout_mode = 2
+text = "BIRD AMOUNT"
+
 [connection signal="timeout" from="Timer" to="." method="_on_timer_timeout"]
