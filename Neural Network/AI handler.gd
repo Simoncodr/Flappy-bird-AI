@@ -8,13 +8,21 @@ class_name AI extends Node
 var node_saver: Array[float] = [] # Saves the values for all the nodes
 
 @onready var network_input : int
-@onready var network_hidden_layers : PackedInt32Array 
+@onready var network_hidden_layers : PackedInt32Array
 @onready var network_output : int
 
+# Finds the largest value in the hidden layers
+func findLargest():
+	var max_value = 0  # Start with the smallest possible value
+	for value in network_hidden_layers:
+		if value > max_value:
+			max_value = value
+	node_saver.resize(max_value)
 
 # Called when the node is added to the scene.
 func _ready() -> void:
 	presetConnection()
+	findLargest()
 
 
 # Load the trained data into the actor
@@ -31,8 +39,6 @@ func neuralNetwork() -> PackedFloat32Array:
 	var final_output: PackedFloat32Array = []
 	
 	# Initialize necessary variables
-	#var node_saver: PackedFloat32Array = [] # Saves the values for all the nodes
-	node_saver.clear()
 	var weights_position: int = 0 # Used to know what weight should be used when
 	
 	# Uses the inputs from the previous layer, unless it's the first one. Then i uses the data from the parent
@@ -50,7 +56,7 @@ func neuralNetwork() -> PackedFloat32Array:
 			for k in range(inputs.size()):
 				node_value += inputs[k] * weights[weights_position]
 				weights_position += 1
-			node_saver.append(relu(node_value))
+			node_saver[j] = (relu(node_value))
 	
 	# Calculates the final output and appends it to the output array
 	for i in range(network_output):

@@ -19,7 +19,7 @@ var game_state : String = "learn" # learn or preset
 func _ready() -> void:
 	if game_state == "learn":
 		createBirds()
-		addVisualizer()
+		#addVisualizer()
 	else:
 		createBird()
 	createPipes()
