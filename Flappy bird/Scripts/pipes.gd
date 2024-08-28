@@ -31,4 +31,3 @@ func addPoint() -> void:
 			once = true
 			if get_parent().PIPES.size() > 0:
 				get_parent().SCORE += 1
-

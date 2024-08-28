@@ -188,5 +188,3 @@ func dataFromJSON() -> Dictionary:
 	
 	# Returns the data in a dictionary
 	return final_output
-
-

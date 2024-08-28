@@ -63,7 +63,3 @@ func reload() -> void:
 		if game_state == "learn":
 			Network.evaluateFitness()
 		get_tree().reload_current_scene()
-
-
-
-

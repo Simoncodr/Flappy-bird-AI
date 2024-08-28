@@ -95,11 +95,6 @@ func node(input : Array, weight : Array) -> float:
 		output_node += input[i] * weight[i]
 	return relu(output_node)
 
-
-# Sigmoid function (It takes the given number and turns it into a number between 0 and 1)
-func sigmoid(x: float) -> float:
-	return 1.0 / (1.0 + exp(-x))
-
 # ReLU function (It takes in a number, and returns it. Unless it's negative, in which case it returns 0)
 func relu(x: float) -> float:
 	return max(0.0, x)
@@ -113,6 +108,3 @@ func acquireInputData() -> void:
 # Runs the network every frame and send the information to the actor
 func _process(_delta) -> void:
 	parent.action(neuralNetwork())
-
-
-
