@@ -20,7 +20,9 @@ func findLargest():
 		if value > max_value:
 			max_value = value
 	node_saver.resize(max_value)
-	#inputs.resize(max_value)
+	inputs.resize(max_value)
+	if parent.gatherData().size() > max_value:
+		inputs.resize(parent.gatherData())
 
 # Called when the node is added to the scene.
 func _ready() -> void:
@@ -31,9 +33,6 @@ func _ready() -> void:
 
 # Calculates the nessesary amount of connections needed and appends an initial value to the weights array
 func createConnections():
-	
-	# Gets the data from the parent to determin the size of the input layer
-	acquireInputData()
 	
 	# Initialize necessary variables
 	var connections : PackedFloat32Array = []
@@ -70,17 +69,19 @@ func neuralNetwork() -> PackedFloat32Array:
 	
 	# Uses the inputs from the previous layer, unless it's the first one. Then i uses the data from the parent
 	for i in range(network_hidden_layers.size()):
+		var tempInputLength : int = 0
 		if i != 0:
-			inputs.clear()
 			for j in range(network_hidden_layers[i - 1]):
-				inputs.append(node_saver[-1- j])
+				inputs[j] = (node_saver[-1- j])
+				tempInputLength += 1
 		else:
 			acquireInputData()
-	
+			tempInputLength += parent.gatherData().size()
+		#print(tempInputLength)
 	# Loops through the layer and adds the weight and layer together to get an final value for each node
 		for j in range(network_hidden_layers[i]):
 			var node_value: float = 0.0
-			for k in range(inputs.size()):
+			for k in range(tempInputLength):
 				node_value += inputs[k] * weights[weights_position]
 				weights_position += 1
 			node_saver[j] = (relu(node_value))
@@ -100,8 +101,8 @@ func relu(x: float) -> float:
 
 # Gets the input data from the parent
 func acquireInputData() -> void:
-	inputs.clear()
-	inputs.append_array(parent.gatherData())
+	for i in range(parent.gatherData().size()):
+		inputs[i] = parent.gatherData()[i]
 
 
 # Runs the network every frame and send the information to the actor
