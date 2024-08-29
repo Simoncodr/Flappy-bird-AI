@@ -7,10 +7,11 @@ class_name AI extends Node
 @onready var data : PackedFloat32Array # Stores the inputs fo use in the next layer of the network
 @onready var parent : Variant = get_parent() # References the parent node (the actor using this network)
 var node_saver: PackedFloat32Array = [] # Saves the values for all the nodes
+var temp_data: PackedFloat32Array = PackedFloat32Array()
 
 @onready var network_input : int
 @onready var network_hidden_layers : PackedInt32Array
-@onready var network_output : int
+@onready var network_output : int 
 
 # Finds the largest value in the hidden layers
 func findLargest():
@@ -19,20 +20,15 @@ func findLargest():
 		if value > max_value:
 			max_value = value
 	node_saver.resize(max_value)
+	temp_data.resize(max_value)
 	data.resize(max_value)
 	if network_input > max_value:
 		data.resize(network_input)
-
-# Called when the node is added to the scene.
-func _ready() -> void:
-	presetConnection()
-	findLargest()
+		temp_data.resize(network_input)
 
 
-# This function does the dirtywork and determins the output based on the input and weights
 func neuralNetwork() -> PackedFloat32Array:
 	var weights_position: int = 0
-	var temp_data: PackedFloat32Array = PackedFloat32Array()
 	
 	for i in range(network_hidden_layers.size()):
 		# Get input data for the current layer
@@ -57,14 +53,15 @@ func neuralNetwork() -> PackedFloat32Array:
 	return data
 
 
-# ReLU function (It takes in a number, and returns it. Unless it's negative, in which case it returns 0)
-func relu(x: float) -> float:
-	return max(0.0, x)
-
-
 # Runs the network every frame and send the information to the actor
 func _process(_delta) -> void:
 	parent.action(neuralNetwork())
+
+
+# Called when the node is added to the scene.
+func _ready() -> void:
+	presetConnection()
+	findLargest()
 
 
 # Load the trained data into the actor

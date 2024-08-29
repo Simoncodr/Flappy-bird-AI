@@ -3,7 +3,6 @@ extends Control
 @onready var score : Label = $VBoxContainer/score
 @onready var generation : Label = $VBoxContainer/generation
 @onready var bird_amount : Label = $"VBoxContainer/bird amount"
-@onready var visualizer : PackedScene = preload("res://Neural Network/Network_visualization.tscn")
 var Pipes = preload("res://Flappy bird/Scenes/pipes.tscn")
 var Birds = preload("res://Flappy bird/Scenes/bird.tscn")
 
@@ -19,14 +18,9 @@ var game_state : String = "learn" # learn or preset
 func _ready() -> void:
 	if game_state == "learn":
 		createBirds()
-		#addVisualizer()
 	else:
 		createBird()
 	createPipes()
-
-func addVisualizer():
-	var viz = visualizer.instantiate()
-	add_child(viz)
 
 func _process(_delta) -> void:
 	score.text = "SCORE: " + str(SCORE)

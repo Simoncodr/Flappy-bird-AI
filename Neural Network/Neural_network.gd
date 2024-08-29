@@ -8,6 +8,7 @@ class_name NetworkNode extends Node
 @onready var data : PackedFloat32Array # Stores the inputs fo use in the next layer of the network
 @onready var parent : Variant = get_parent() # References the parent node (the actor using this network)
 var node_saver: PackedFloat32Array = [] # Saves the values for all the nodes
+var temp_data: PackedFloat32Array = PackedFloat32Array()
 
 @onready var network_input : int = Network.input
 @onready var network_hidden_layers : PackedInt32Array = Network.hidden_layers
@@ -20,20 +21,15 @@ func findLargest():
 		if value > max_value:
 			max_value = value
 	node_saver.resize(max_value)
+	temp_data.resize(max_value)
 	data.resize(max_value)
 	if network_input > max_value:
 		data.resize(network_input)
-
-# Called when the node is added to the scene.
-func _ready() -> void:
-	createConnections() # Created the connections
-	weights.append_array(Network.POPULATIONWEIGHTS[parent.number]) # Appends the current weights that the actor should have
-	findLargest()
+		temp_data.resize(network_input)
 
 
 func neuralNetwork() -> PackedFloat32Array:
 	var weights_position: int = 0
-	var temp_data: PackedFloat32Array = PackedFloat32Array()
 	
 	for i in range(network_hidden_layers.size()):
 		# Get input data for the current layer
@@ -61,6 +57,13 @@ func neuralNetwork() -> PackedFloat32Array:
 # Runs the network every frame and send the information to the actor
 func _process(_delta) -> void:
 	parent.action(neuralNetwork())
+
+
+# Called when the node is added to the scene.
+func _ready() -> void:
+	createConnections() # Created the connections
+	weights.append_array(Network.POPULATIONWEIGHTS[parent.number]) # Appends the current weights that the actor should have
+	findLargest()
 
 
 # Calculates the nessesary amount of connections needed and appends an initial value to the weights array
