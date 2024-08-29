@@ -29,28 +29,42 @@ func findLargest():
 
 
 func neuralNetwork() -> PackedFloat32Array:
+	# Initialize the position in the weights array. This will track which weight to use in each computation.
 	var weights_position: int = 0
 	
+	# Iterate over each hidden layer in the network
 	for i in range(network_hidden_layers.size()):
-		# Get input data for the current layer
+		# If it's the first layer, use the input data from the parent (actor's data)
 		if i == 0:
 			temp_data = parent.gatherData()
 		else:
+			# For subsequent layers, use the outputs from the previous layer (stored in node_saver)
+			# 'slice' creates a copy of the relevant part of node_saver for this layer
 			temp_data = node_saver.slice(0, network_hidden_layers[i - 1])
 
-		# Initialize nodes for the current layer
+		# Calculate the value for each node in the current layer
 		for j in range(network_hidden_layers[i]):
+			# Start with a node value of 0
 			var node_value: float = 0.0
+			
+			# Sum the products of inputs and their corresponding weights
 			for k in range(temp_data.size()):
 				node_value += temp_data[k] * weights[weights_position]
+				# Move to the next weight in the array
 				weights_position += 1
+				
+			# Apply the ReLU activation function: store the node value if it's positive, otherwise store 0
 			node_saver[j] = max(0.0, node_value)
 	
-	# Calculate the output layer
+	# Calculate the output layer based on the final hidden layer
 	for i in range(network_output):
+		# Get the corresponding node value from the last layer's output
+		# Note: '-1 - i' indexes from the end of the array
 		data[i] = max(0.0, node_saver[-1 - i] * weights[weights_position])
+		# Move to the next weight
 		weights_position += 1
 	
+	# Return the final output data array
 	return data
 
 
