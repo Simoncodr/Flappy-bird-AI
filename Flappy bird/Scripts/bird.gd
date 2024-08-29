@@ -52,15 +52,20 @@ func deleteSelf() -> void:
 
 
 func gatherData() -> PackedFloat32Array:
-	var data : PackedFloat32Array = []
+	var data : PackedFloat32Array = PackedFloat32Array();
+	data.resize(3);
+	
 	velocity = linear_velocity.y
 	if pipes.size() > 0 and pipes[0] != null:
 		distanceToPipeY = pipes[0].global_position.y - global_position.y
 		distanceToPipe = pipes[0].global_position.x - global_position.x
-	data.append(velocity)
-	data.append(distanceToPipeY)
-	data.append(distanceToPipe)
+	
+	data[0] = velocity;
+	data[1] = distanceToPipeY;
+	data[2] = distanceToPipe;
+	
 	return data 
+
 
 func dynamicScore():
 	if global_position.y >= pipes[0].global_position.y + 160 and global_position.y <= pipes[0].global_position.y + 30:

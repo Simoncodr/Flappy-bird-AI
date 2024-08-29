@@ -17,16 +17,11 @@ var max_layer_size: int;
 
 func getMaxLayerSize() -> int:
 	var max_size = max(network_input, network_output);
-
-	var biggest_size: int = 0;
-	var biggest_index: int = -1;
+	
 	for i in network_hidden_layers.size():
 		var size = network_hidden_layers[i];
-		if size > biggest_size:
-			biggest_index = i;
-			biggest_size = size;
-
-	max_size = max(max_size, biggest_size);
+		max_size = max(max_size, size);
+		
 	return max_size;
 
 # Finds the largest value in the hidden layers
@@ -82,8 +77,7 @@ func newNeuralNetwork() -> PackedFloat32Array:
 	var old_layer: PackedFloat32Array = PackedFloat32Array();
 	old_layer.resize(max_layer_size);
 	
-	var new_layer: PackedFloat32Array = PackedFloat32Array();
-	new_layer.resize(max_layer_size);
+	var new_layer: PackedFloat32Array = old_layer.duplicate();
 	
 	# Insert input values in old_layer
 	acquireInputData();
@@ -92,10 +86,11 @@ func newNeuralNetwork() -> PackedFloat32Array:
 	
 	var weight_index_offset: int = 0;
 	var prev_layer_size: int = network_input;
+	var layer_size: int
 	
 	# Calculate hidden layers
 	for i in network_hidden_layers.size():
-		var layer_size: int = network_hidden_layers[i];
+		layer_size = network_hidden_layers[i];
 		
 		for j in layer_size:
 			var value: float;
@@ -118,9 +113,10 @@ func newNeuralNetwork() -> PackedFloat32Array:
 		for j in prev_layer_size:
 			value += old_layer[j] * weights[weight_index_offset + i * prev_layer_size + j];
 		new_layer[i] = relu(value);
-	
+
 	# Return the final output
 	var output: PackedFloat32Array = new_layer.slice(0, network_output);
+
 	return output;
 
 
@@ -165,8 +161,9 @@ func relu(x: float) -> float:
 
 # Gets the input data from the parent
 func acquireInputData() -> void:
-	for i in range(parent.gatherData().size()):
-		inputs[i] = parent.gatherData()[i]
+	var data = parent.gatherData();
+	for i in range(data.size()):
+		inputs[i] = data[i];
 
 
 # Runs the network every frame and send the information to the actor
@@ -174,10 +171,14 @@ func _process(_delta) -> void:
 	#var start_time := Time.get_ticks_usec();
 	#var result := neuralNetwork();
 	#var end_time := Time.get_ticks_usec();
+	
 	#print("old time: ", (end_time - start_time) / 1000.0, " ms");
-	#start_time = Time.get_ticks_usec();
-	#result = newNeuralNetwork();
-	#end_time = Time.get_ticks_usec();
-	#print("new time: ", (end_time - start_time) / 1000.0, " ms");
-	parent.action(newNeuralNetwork());
+	
+	var start_time = Time.get_ticks_usec();
+	var result = newNeuralNetwork();
+	var end_time = Time.get_ticks_usec();
+	
+	print("total time: ", (end_time - start_time) / 1000.0, " ms");
+	
+	parent.action(result);
 	
