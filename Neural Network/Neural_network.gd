@@ -8,6 +8,7 @@ class_name NetworkNode extends Node
 @onready var inputs : PackedFloat32Array # Stores the inputs fo use in the next layer of the network
 @onready var parent : Variant = get_parent() # References the parent node (the actor using this network)
 var node_saver: PackedFloat32Array = [] # Saves the values for all the nodes
+var final_output: PackedFloat32Array = []
 
 @onready var network_input : int = Network.input
 @onready var network_hidden_layers : PackedInt32Array = Network.hidden_layers
@@ -23,6 +24,7 @@ func findLargest():
 	inputs.resize(max_value)
 	if parent.gatherData().size() > max_value:
 		inputs.resize(parent.gatherData())
+	final_output.resize(network_output)
 
 # Called when the node is added to the scene.
 func _ready() -> void:
@@ -62,7 +64,6 @@ func createConnections():
 
 # This function does the dirtywork and determins the output based on the input and weights
 func neuralNetwork() -> PackedFloat32Array:
-	var final_output: PackedFloat32Array = []
 	
 	# Initialize necessary variables
 	var weights_position: int = 0 # Used to know what weight should be used when
@@ -88,7 +89,7 @@ func neuralNetwork() -> PackedFloat32Array:
 	
 	# Calculates the final output and appends it to the output array
 	for i in range(network_output):
-		final_output.append(relu(node_saver[-i] * weights[weights_position]))
+		final_output[i] = (relu(node_saver[-i] * weights[weights_position]))
 		weights_position += 1
 	
 	# Return the final output
