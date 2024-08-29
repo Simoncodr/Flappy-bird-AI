@@ -18,7 +18,7 @@ var distanceToPipe : float = 0
 func _process(_delta) -> void:
 	birdRotation(linear_velocity.y)
 	dynamicScore()
-	showOrHide()
+	#showOrHide()
 
 func birdRotation(velocityY: float) -> void:
 	var max_rotation = deg_to_rad(75)  
@@ -31,7 +31,6 @@ func _input(event) -> void:
 		apply_central_impulse(jump_impulse - linear_velocity)
 
 func action(network : PackedFloat32Array) -> void:
-	#print(network)
 	if network[0] > network[1]:
 		apply_central_impulse(jump_impulse - linear_velocity)
 

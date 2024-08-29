@@ -13,45 +13,26 @@ var node_saver: PackedFloat32Array = [] # Saves the values for all the nodes
 @onready var network_hidden_layers : PackedInt32Array = Network.hidden_layers
 @onready var network_output : int = Network.output
 
-var max_layer_size: int;
-#var node_values: Array[PackedFloat32Array];
+# Finds the largest value in the hidden layers
+func findLargest():
+	var max_value = 0  # Start with the smallest possible value
+	for value in network_hidden_layers:
+		if value > max_value:
+			max_value = value
+	node_saver.resize(max_value)
+	inputs.resize(max_value)
+	if parent.gatherData().size() > max_value:
+		inputs.resize(parent.gatherData())
 
 # Called when the node is added to the scene.
 func _ready() -> void:
 	createConnections() # Created the connections
 	weights.append_array(Network.POPULATIONWEIGHTS[parent.number]) # Appends the current weights that the actor should have
-	
-	
-#region Finding the largest layer size in network
-	max_layer_size = max(network_input, network_output);
-	
-	var biggest_size: int = 0;
-	var biggest_index: int = -1;
-	for i in network_hidden_layers.size():
-		var size = network_hidden_layers[i];
-		if size > biggest_size:
-			biggest_index = i;
-			biggest_size = size;
-	
-	max_layer_size = max(max_layer_size, biggest_size);
-#endregion
-	
-	print(weights.size())
-	#node_values.resize(Network.hidden_layers.size() + 2);
-	#
-	#for i in range(1, node_values.size() - 1):
-		#node_values[i].resize(network_hidden_layers[i - 1]);
-	#
-	#node_values[0].resize(network_input);
-	#node_values.back().resize(network_output);
-	#
-	#print(node_values)
+	findLargest()
+
 
 # Calculates the nessesary amount of connections needed and appends an initial value to the weights array
 func createConnections():
-	
-	# Gets the data from the parent to determin the size of the input layer
-	acquireInputData()
 	
 	# Initialize necessary variables
 	var connections : PackedFloat32Array = []
@@ -130,27 +111,27 @@ func neuralNetwork() -> PackedFloat32Array:
 	var final_output: PackedFloat32Array = [];
 	
 	# Initialize necessary variables
-	#var node_saver: PackedFloat32Array = [] # Saves the values for all the nodes
-	node_saver.clear()
 	var weights_position: int = 0 # Used to know what weight should be used when
 	
 	# Uses the inputs from the previous layer, unless it's the first one. Then i uses the data from the parent
 	for i in range(network_hidden_layers.size()):
+		var tempInputLength : int = 0
 		if i != 0:
-			inputs.clear()
 			for j in range(network_hidden_layers[i - 1]):
-				inputs.append(node_saver[-1- j])
+				inputs[j] = (node_saver[-1- j])
+				tempInputLength += 1
 		else:
 			acquireInputData()
-	
+			tempInputLength += parent.gatherData().size()
+		#print(tempInputLength)
 	# Loops through the layer and adds the weight and layer together to get an final value for each node
 		for j in range(network_hidden_layers[i]):
-			var weight: Array = []
-			for k in range(inputs.size()):
-				weight.append(weights[weights_position])
+			var node_value: float = 0.0
+			for k in range(tempInputLength):
+				node_value += inputs[k] * weights[weights_position]
 				weights_position += 1
-			node_saver.append(node(inputs, weight))
-		
+			node_saver[j] = (relu(node_value))
+	
 	# Calculates the final output and appends it to the output array
 	for i in range(network_output):
 		final_output.append(relu(node_saver[-i] * weights[weights_position]))
@@ -160,22 +141,14 @@ func neuralNetwork() -> PackedFloat32Array:
 	return final_output
 
 
-# Handles the math for every node in the network.
-# It adds together the values of the input and their respective weights into a final value
-func node(input : Array, weight : Array) -> float:
-	var output_node : float = 0
-	for i in range(input.size()):
-		output_node += input[i] * weight[i]
-	return relu(output_node)
-
 # ReLU function (It takes in a number, and returns it. Unless it's negative, in which case it returns 0)
 func relu(x: float) -> float:
 	return max(0.0, x)
 
 # Gets the input data from the parent
 func acquireInputData() -> void:
-	inputs.clear();
-	inputs.append_array(parent.gatherData())
+	for i in range(parent.gatherData().size()):
+		inputs[i] = parent.gatherData()[i]
 
 
 # Runs the network every frame and send the information to the actor

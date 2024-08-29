@@ -10,7 +10,7 @@ var MUTATION_RATE : float = 0.3 # Determins how much the weights mutate after ea
 var GENERATION : int = 1 # Number of generations passed
 
 var input : int = 3 # NOTE The number of inputs
-var hidden_layers : PackedInt32Array = [8, 8, 8] #NOTE The numbers specify how many nodes are in each layer
+var hidden_layers : Array[int] = [8, 8, 8] #NOTE The numbers specify how many nodes are in each layer
 var output : int = 2 # NOTE The number of outputs
 
 

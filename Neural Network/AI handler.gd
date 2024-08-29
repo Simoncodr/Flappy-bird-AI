@@ -8,13 +8,21 @@ class_name AI extends Node
 var node_saver: Array[float] = [] # Saves the values for all the nodes
 
 @onready var network_input : int
-@onready var network_hidden_layers : PackedInt32Array 
+@onready var network_hidden_layers : PackedInt32Array
 @onready var network_output : int
 
+# Finds the largest value in the hidden layers
+func findLargest():
+	var max_value = 0  # Start with the smallest possible value
+	for value in network_hidden_layers:
+		if value > max_value:
+			max_value = value
+	node_saver.resize(max_value)
 
 # Called when the node is added to the scene.
 func _ready() -> void:
 	presetConnection()
+	findLargest()
 
 
 # Load the trained data into the actor
@@ -31,8 +39,6 @@ func neuralNetwork() -> PackedFloat32Array:
 	var final_output: PackedFloat32Array = []
 	
 	# Initialize necessary variables
-	#var node_saver: PackedFloat32Array = [] # Saves the values for all the nodes
-	node_saver.clear()
 	var weights_position: int = 0 # Used to know what weight should be used when
 	
 	# Uses the inputs from the previous layer, unless it's the first one. Then i uses the data from the parent
@@ -46,11 +52,11 @@ func neuralNetwork() -> PackedFloat32Array:
 	
 	# Loops through the layer and adds the weight and layer together to get an final value for each node
 		for j in range(network_hidden_layers[i]):
-			var weight: Array = []
+			var node_value: float = 0.0
 			for k in range(inputs.size()):
-				weight.append(weights[weights_position])
+				node_value += inputs[k] * weights[weights_position]
 				weights_position += 1
-			node_saver.append(node(inputs, weight))
+			node_saver[j] = (relu(node_value))
 	
 	# Calculates the final output and appends it to the output array
 	for i in range(network_output):
@@ -59,15 +65,6 @@ func neuralNetwork() -> PackedFloat32Array:
 	
 	# Return the final output
 	return final_output
-
-
-# Handles the math for every node in the network.
-# It adds together the values of the input and their respective weights into a final value
-func node(input : Array, weight : Array) -> float:
-	var output_node : float = 0
-	for i in range(input.size()):
-		output_node += input[i] * weight[i]
-	return relu(output_node)
 
 
 # ReLU function (It takes in a number, and returns it. Unless it's negative, in which case it returns 0)
