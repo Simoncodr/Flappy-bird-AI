@@ -1,4 +1,5 @@
-class_name NetworkNode extends Node
+#class_name NetworkNode
+extends Node
 
 # This class represents a neural network node for an actor (e.g., a bird in a game).
 # The actor that instantiates this class will utilize the neural network to learn
@@ -118,6 +119,3 @@ func acquireInputData() -> void:
 # Runs the network every frame and send the information to the actor
 func _process(_delta) -> void:
 	parent.action(neuralNetwork())
-
-
-

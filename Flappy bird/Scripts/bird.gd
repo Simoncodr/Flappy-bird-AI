@@ -31,7 +31,7 @@ func _input(event) -> void:
 		apply_central_impulse(jump_impulse - linear_velocity)
 
 func action(network : PackedFloat32Array) -> void:
-	print(network)
+	#print(network)
 	if network[0] > network[1]:
 		apply_central_impulse(jump_impulse - linear_velocity)
 

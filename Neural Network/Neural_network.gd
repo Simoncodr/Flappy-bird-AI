@@ -13,12 +13,39 @@ var node_saver: PackedFloat32Array = [] # Saves the values for all the nodes
 @onready var network_hidden_layers : PackedInt32Array = Network.hidden_layers
 @onready var network_output : int = Network.output
 
+var max_layer_size: int;
+#var node_values: Array[PackedFloat32Array];
 
 # Called when the node is added to the scene.
 func _ready() -> void:
 	createConnections() # Created the connections
 	weights.append_array(Network.POPULATIONWEIGHTS[parent.number]) # Appends the current weights that the actor should have
-
+	
+	
+#region Finding the largest layer size in network
+	max_layer_size = max(network_input, network_output);
+	
+	var biggest_size: int = 0;
+	var biggest_index: int = -1;
+	for i in network_hidden_layers.size():
+		var size = network_hidden_layers[i];
+		if size > biggest_size:
+			biggest_index = i;
+			biggest_size = size;
+	
+	max_layer_size = max(max_layer_size, biggest_size);
+#endregion
+	
+	print(weights.size())
+	#node_values.resize(Network.hidden_layers.size() + 2);
+	#
+	#for i in range(1, node_values.size() - 1):
+		#node_values[i].resize(network_hidden_layers[i - 1]);
+	#
+	#node_values[0].resize(network_input);
+	#node_values.back().resize(network_output);
+	#
+	#print(node_values)
 
 # Calculates the nessesary amount of connections needed and appends an initial value to the weights array
 func createConnections():
@@ -52,9 +79,55 @@ func createConnections():
 	Network.POPULATIONWEIGHTS.append(connections)
 
 
+func newNeuralNetwork() -> PackedFloat32Array:
+	var old_layer: PackedFloat32Array = PackedFloat32Array();
+	old_layer.resize(max_layer_size);
+	
+	var new_layer: PackedFloat32Array = PackedFloat32Array();
+	new_layer.resize(max_layer_size);
+	
+	# Insert input values in old_layer
+	acquireInputData();
+	for i in network_input:
+		old_layer.set(i, inputs[i]);
+	
+	var weight_index_offset: int = 0;
+	var prev_layer_size: int = network_input;
+	
+	# Calculate hidden layers
+	for i in network_hidden_layers.size():
+		var layer_size: int = network_hidden_layers[i];
+		
+		for j in layer_size:
+			var value: float;
+			for k in prev_layer_size:
+				var weight: float = weights[weight_index_offset + j * prev_layer_size + k];
+				value += old_layer[k] * weight;
+				
+			new_layer[j] = relu(value);
+		
+		weight_index_offset += prev_layer_size * layer_size;
+		prev_layer_size = layer_size;
+		
+		# copy new_layer values to old_layer
+		for j in max_layer_size:
+			old_layer[j] = new_layer[j];
+	
+	# Calculate output
+	for i in network_output:
+		var value: float;
+		for j in prev_layer_size:
+			value += old_layer[j] * weights[weight_index_offset + i * prev_layer_size + j];
+		new_layer[i] = relu(value);
+	
+	# Return the final output
+	var output: PackedFloat32Array = new_layer.slice(0, network_output);
+	return output;
+
+
 # This function does the dirtywork and determins the output based on the input and weights
 func neuralNetwork() -> PackedFloat32Array:
-	var final_output: PackedFloat32Array = []
+	var final_output: PackedFloat32Array = [];
 	
 	# Initialize necessary variables
 	#var node_saver: PackedFloat32Array = [] # Saves the values for all the nodes
@@ -77,7 +150,7 @@ func neuralNetwork() -> PackedFloat32Array:
 				weight.append(weights[weights_position])
 				weights_position += 1
 			node_saver.append(node(inputs, weight))
-	
+		
 	# Calculates the final output and appends it to the output array
 	for i in range(network_output):
 		final_output.append(relu(node_saver[-i] * weights[weights_position]))
@@ -101,10 +174,19 @@ func relu(x: float) -> float:
 
 # Gets the input data from the parent
 func acquireInputData() -> void:
-	inputs.clear()
+	inputs.clear();
 	inputs.append_array(parent.gatherData())
 
 
 # Runs the network every frame and send the information to the actor
 func _process(_delta) -> void:
-	parent.action(neuralNetwork())
+	#var start_time := Time.get_ticks_usec();
+	#var result := neuralNetwork();
+	#var end_time := Time.get_ticks_usec();
+	#print("old time: ", (end_time - start_time) / 1000.0, " ms");
+	#start_time = Time.get_ticks_usec();
+	#result = newNeuralNetwork();
+	#end_time = Time.get_ticks_usec();
+	#print("new time: ", (end_time - start_time) / 1000.0, " ms");
+	parent.action(newNeuralNetwork());
+	
