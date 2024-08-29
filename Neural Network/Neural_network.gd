@@ -5,10 +5,9 @@ class_name NetworkNode extends Node
 # and perform specific actions, such as jumping.
 
 @onready var weights : PackedFloat32Array # Stores the weights for this actor
-@onready var inputs : PackedFloat32Array # Stores the inputs fo use in the next layer of the network
+@onready var data : PackedFloat32Array # Stores the inputs fo use in the next layer of the network
 @onready var parent : Variant = get_parent() # References the parent node (the actor using this network)
 var node_saver: PackedFloat32Array = [] # Saves the values for all the nodes
-var final_output: PackedFloat32Array = []
 
 @onready var network_input : int = Network.input
 @onready var network_hidden_layers : PackedInt32Array = Network.hidden_layers
@@ -16,15 +15,14 @@ var final_output: PackedFloat32Array = []
 
 # Finds the largest value in the hidden layers
 func findLargest():
-	var max_value = 0  # Start with the smallest possible value
+	var max_value = network_output  # Start with the smallest possible value
 	for value in network_hidden_layers:
 		if value > max_value:
 			max_value = value
 	node_saver.resize(max_value)
-	inputs.resize(max_value)
-	if parent.gatherData().size() > max_value:
-		inputs.resize(parent.gatherData())
-	final_output.resize(network_output)
+	data.resize(max_value)
+	if network_input > max_value:
+		data.resize(network_input)
 
 # Called when the node is added to the scene.
 func _ready() -> void:
@@ -73,37 +71,34 @@ func neuralNetwork() -> PackedFloat32Array:
 		var tempInputLength : int = 0
 		if i != 0:
 			for j in range(network_hidden_layers[i - 1]):
-				inputs[j] = (node_saver[-1- j])
+				data[j] = (node_saver[-1- j])
 				tempInputLength += 1
 		else:
-			acquireInputData()
-			tempInputLength += parent.gatherData().size()
-		#print(tempInputLength)
+			for j in range(network_input):
+				data[j] = parent.gatherData()[j]
+				tempInputLength += 1
+		
 	# Loops through the layer and adds the weight and layer together to get an final value for each node
 		for j in range(network_hidden_layers[i]):
 			var node_value: float = 0.0
 			for k in range(tempInputLength):
-				node_value += inputs[k] * weights[weights_position]
+				node_value += data[k] * weights[weights_position]
 				weights_position += 1
 			node_saver[j] = (relu(node_value))
 	
 	# Calculates the final output and appends it to the output array
 	for i in range(network_output):
-		final_output[i] = (relu(node_saver[-i] * weights[weights_position]))
+		data[i] = (relu(node_saver[-i] * weights[weights_position]))
 		weights_position += 1
 	
 	# Return the final output
-	return final_output
+	return data
 
 
 # ReLU function (It takes in a number, and returns it. Unless it's negative, in which case it returns 0)
 func relu(x: float) -> float:
 	return max(0.0, x)
 
-# Gets the input data from the parent
-func acquireInputData() -> void:
-	for i in range(parent.gatherData().size()):
-		inputs[i] = parent.gatherData()[i]
 
 
 # Runs the network every frame and send the information to the actor
