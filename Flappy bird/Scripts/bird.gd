@@ -18,7 +18,6 @@ var distanceToPipe : float = 0
 func _process(_delta) -> void:
 	birdRotation(linear_velocity.y)
 	dynamicScore()
-	#showOrHide()
 
 func birdRotation(velocityY: float) -> void:
 	var max_rotation = deg_to_rad(75)  
