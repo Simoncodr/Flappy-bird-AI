@@ -13,6 +13,22 @@ var node_saver: PackedFloat32Array = [] # Saves the values for all the nodes
 @onready var network_hidden_layers : PackedInt32Array = Network.hidden_layers
 @onready var network_output : int = Network.output
 
+var max_layer_size: int;
+
+func getMaxLayerSize() -> int:
+	var max_size = max(network_input, network_output);
+
+	var biggest_size: int = 0;
+	var biggest_index: int = -1;
+	for i in network_hidden_layers.size():
+		var size = network_hidden_layers[i];
+		if size > biggest_size:
+			biggest_index = i;
+			biggest_size = size;
+
+	max_size = max(max_size, biggest_size);
+	return max_size;
+
 # Finds the largest value in the hidden layers
 func findLargest():
 	var max_value = 0  # Start with the smallest possible value
@@ -29,6 +45,8 @@ func _ready() -> void:
 	createConnections() # Created the connections
 	weights.append_array(Network.POPULATIONWEIGHTS[parent.number]) # Appends the current weights that the actor should have
 	findLargest()
+	
+	max_layer_size = getMaxLayerSize();
 
 
 # Calculates the nessesary amount of connections needed and appends an initial value to the weights array
