@@ -1,0 +1,54 @@
+[gd_scene load_steps=5 format=3 uid="uid://c2vy21t5afjy2"]
+
+[ext_resource type="Script" path="res://Flappy bird/Scripts/bird.gd" id="1_tbfb0"]
+[ext_resource type="Texture2D" uid="uid://vq4sr4x74mp3" path="res://Textures/The bird.png" id="2_xbhny"]
+[ext_resource type="Script" path="res://Neural Network/Neural_network.gd" id="3_2wvvr"]
+
+[sub_resource type="CapsuleShape2D" id="CapsuleShape2D_7pini"]
+radius = 7.0
+height = 26.0
+
+[node name="Bird" type="RigidBody2D"]
+scale = Vector2(2, 2)
+collision_layer = 0
+mass = 1.1
+script = ExtResource("1_tbfb0")
+
+[node name="Sprite2D" type="Sprite2D" parent="."]
+scale = Vector2(3, 3)
+texture = ExtResource("2_xbhny")
+
+[node name="Area2D" type="Area2D" parent="."]
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Area2D"]
+rotation = 1.5708
+shape = SubResource("CapsuleShape2D_7pini")
+
+[node name="Data" type="Control" parent="."]
+visible = false
+layout_mode = 3
+anchors_preset = 0
+offset_right = 40.0
+offset_bottom = 40.0
+
+[node name="VBoxContainer" type="VBoxContainer" parent="Data"]
+layout_mode = 2
+offset_right = 40.0
+offset_bottom = 77.0
+
+[node name="Bird velocity" type="Label" parent="Data/VBoxContainer"]
+layout_mode = 2
+text = "0"
+
+[node name="Distance to center" type="Label" parent="Data/VBoxContainer"]
+layout_mode = 2
+text = "0"
+
+[node name="Distance to pipe" type="Label" parent="Data/VBoxContainer"]
+layout_mode = 2
+text = "0"
+
+[node name="NetworkNode" type="Node" parent="."]
+script = ExtResource("3_2wvvr")
+
+[connection signal="area_entered" from="Area2D" to="." method="_on_area_2d_area_entered"]

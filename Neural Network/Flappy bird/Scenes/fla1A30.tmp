@@ -1,0 +1,151 @@
+[gd_scene load_steps=14 format=3 uid="uid://b5wcsumyer4w0"]
+
+[ext_resource type="Shader" path="res://Shaders/flappy_bird_game.gdshader" id="1_usquy"]
+[ext_resource type="Script" path="res://Flappy bird/Scripts/flappy_bird_game.gd" id="2_y26tk"]
+[ext_resource type="Texture2D" uid="uid://dwe0xwwrh00n6" path="res://Textures/Sky.png" id="3_g6uno"]
+[ext_resource type="Texture2D" uid="uid://c6gdepnd1tvx4" path="res://Textures/Clouds.png" id="4_xtpt5"]
+[ext_resource type="Texture2D" uid="uid://brdx4epe8sx3x" path="res://Textures/City.png" id="5_qa6i0"]
+[ext_resource type="Texture2D" uid="uid://4dsa441vxtn7" path="res://Textures/Greenery.png" id="6_d0fqt"]
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_qn466"]
+shader = ExtResource("1_usquy")
+shader_parameter/speed = Vector2(0.05, 0)
+
+[sub_resource type="Shader" id="Shader_djkcf"]
+code = "shader_type canvas_item;
+
+uniform vec2 speed = vec2(1.0, 0.0);
+
+void fragment() {
+	COLOR = texture(TEXTURE, mod(UV + TIME * speed, 1.0));
+}"
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_ghmfa"]
+shader = SubResource("Shader_djkcf")
+shader_parameter/speed = Vector2(0.01, 0)
+
+[sub_resource type="Shader" id="Shader_2rlc5"]
+code = "shader_type canvas_item;
+
+uniform vec2 speed = vec2(1.0, 0.0);
+
+void fragment() {
+	COLOR = texture(TEXTURE, mod(UV + TIME * speed, 1.0));
+}"
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_68m35"]
+shader = SubResource("Shader_2rlc5")
+shader_parameter/speed = Vector2(0.03, 0)
+
+[sub_resource type="Shader" id="Shader_lid2h"]
+code = "shader_type canvas_item;
+
+uniform vec2 speed = vec2(1.0, 0.0);
+
+void fragment() {
+	COLOR = texture(TEXTURE, mod(UV + TIME * speed, 1.0));
+}"
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_d1mhp"]
+shader = SubResource("Shader_lid2h")
+shader_parameter/speed = Vector2(0.05, 0)
+
+[node name="Flappy bird game" type="Control"]
+material = SubResource("ShaderMaterial_qn466")
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("2_y26tk")
+
+[node name="Sky" type="TextureRect" parent="."]
+layout_direction = 1
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+texture = ExtResource("3_g6uno")
+expand_mode = 5
+stretch_mode = 6
+
+[node name="Clouds" type="TextureRect" parent="."]
+material = SubResource("ShaderMaterial_ghmfa")
+layout_direction = 1
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+texture = ExtResource("4_xtpt5")
+expand_mode = 5
+stretch_mode = 6
+
+[node name="City" type="TextureRect" parent="."]
+material = SubResource("ShaderMaterial_68m35")
+layout_direction = 1
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+texture = ExtResource("5_qa6i0")
+expand_mode = 5
+stretch_mode = 6
+
+[node name="Greenery" type="TextureRect" parent="."]
+material = SubResource("ShaderMaterial_d1mhp")
+layout_direction = 1
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+texture = ExtResource("6_d0fqt")
+expand_mode = 5
+stretch_mode = 6
+
+[node name="Control" type="Control" parent="."]
+layout_direction = 1
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="Camera2D" type="Camera2D" parent="Control"]
+
+[node name="Timer" type="Timer" parent="."]
+wait_time = 2.0
+autostart = true
+
+[node name="Control2" type="Control" parent="."]
+layout_direction = 1
+layout_mode = 1
+anchors_preset = 5
+anchor_left = 0.5
+anchor_right = 0.5
+grow_horizontal = 2
+
+[node name="score" type="Label" parent="Control2"]
+top_level = true
+layout_direction = 1
+layout_mode = 1
+anchors_preset = 5
+anchor_left = 0.5
+anchor_right = 0.5
+offset_left = -20.0
+offset_right = 20.0
+offset_bottom = 23.0
+grow_horizontal = 2
+
+[connection signal="timeout" from="Timer" to="." method="_on_timer_timeout"]
